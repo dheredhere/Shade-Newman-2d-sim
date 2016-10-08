@@ -31,7 +31,8 @@ class LaplaceSolver:
                     fringe.append((neighbor, depth + 1))
         return ordering
 
-
+#very basic, just to verify changes
+#remove later
 def test():
     s = LaplaceSolver(environments.testGridB, (1, 1))
     d = s.findOrdering()

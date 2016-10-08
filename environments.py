@@ -65,19 +65,37 @@ class Environment:
         row, col = position
         return self.grid[row][col] == -1
 
-    def getNeighbors(self, position):
-    '''
-    finds all valid neighbors from a cell
-    returns a list
-    '''
+    def getRowNeighbors(self, position):
+        '''
+        returns list of free space neighbors in row
+        '''
         row, col = position
-        neighborPositions = [(row+1, col), (row-1, col), (row, col+1), (row, col-1)]
+        rowNeighbors = [(row, col+1), (row, col-1)]
+        return self.filterNeighbors(rowNeighbors)
 
-        #check for out-of-bounds errors and occupied space
-        for position in neighborPositions[:]:
-            if self.outOfBounds(position) or self.isOccupied(position):
-                neighborPositions.remove(position)
-        return neighborPositions
+    def getColNeighbors(self, position):
+        '''
+        returns list of free space neighbors in column
+        '''
+        row, col = position
+        colNeighbors = [(row+1, col), (row-1, col)]
+        return self.filterNeighbors(colNeighbors)
+
+    def getNeighbors(self, position):
+        '''
+        returns list of all valid neighbors
+        (one manhattan distance away)
+        '''
+        return self.getColNeighbors(position) + self.getRowNeighbors(position)
+
+    def filterNeighbors(self, neighborList):
+        '''
+        removes invalid neighbors in list
+        '''
+        for neighbor in neighborList[:]:
+            if self.outOfBounds(neighbor) or self.isOccupied(neighbor):
+                neighborList.remove(neighbor)
+        return neighborList
 
     def outOfBounds(self, coordinate):
         rows, cols = self.getDimensions()
