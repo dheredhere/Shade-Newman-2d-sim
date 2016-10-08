@@ -2,7 +2,7 @@ import environments
 from environments import Environment
 from collections import deque
 
-class Solver:
+class LaplaceSolver:
     def __init__(self, startEnvironment, startPos):
         self.currentState = startEnvironment
         self.currentPos = startPos
@@ -32,25 +32,8 @@ class Solver:
         return ordering
 
 
-def getNeighbors(environment, position):
-    '''
-    finds all valid neighbors from a cell
-    returns a list
-    '''
-    row, col = position
-    neighborPositions = [(row+1, col), (row-1, col), 
-                         (row, col+1), (row, col-1)]
-
-    #check for out-of-bounds errors and occupied space
-    for position in neighborPositions[:]:
-        if outOfBounds(position, environment) or environment.isOccupied(position):
-            neighborPositions.remove(position)
-    return neighborPositions
-
-
-
 def test():
-    s = Solver(environments.testGridB, (1, 1))
+    s = LaplaceSolver(environments.testGridB, (1, 1))
     d = s.findOrdering()
     for i in d:
         print i
