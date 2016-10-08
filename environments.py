@@ -14,6 +14,7 @@ charToCell = {
         'X': -1,  
         '?': 0, }
 
+#temporary, only for debugging
 cellToChar = {
         -1: 'X',
         0: '?',
@@ -37,8 +38,8 @@ def stringsToMatrix(stringArray):
 
 '''
 Environment class
-every environment has an occupancy grid and dimensions
-Also needs methods to update the occupancy grid
+Has occupancy grid, dimensions, methods to update,
+methods to get neighboring cells (x and y direction)
 '''
 
 class Environment:
@@ -65,7 +66,7 @@ class Environment:
         return self.grid[row][col] == -1
 
     def getNeighbors(self, position):
-        '''
+    '''
     finds all valid neighbors from a cell
     returns a list
     '''
@@ -81,6 +82,10 @@ class Environment:
     def outOfBounds(self, coordinate):
         rows, cols = self.getDimensions()
         return coordinate[0] < 0 or coordinate[1] < 0 or coordinate[0] >= rows or coordinate[1] >= cols
+
+
+
+
 '''
 simple environment instances for testing
 XXX
