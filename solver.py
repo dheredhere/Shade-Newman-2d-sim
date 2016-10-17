@@ -12,7 +12,7 @@ class LaplaceSolver:
 
         #init approximation matrix with same dims as grid
         #fill with 0's, 1 at start position
-        self.approximation = np.zeros_like(startEnvironment.grid)
+        self.approximation = np.zeros_like(startEnvironment.currentState)
         row, col = startPos
         self.approximation[row][col] = 1
     
@@ -53,8 +53,8 @@ class LaplaceSolver:
         for (cell, depth) in self.ordering:
             rowNeighbors = self.currentState.getRowNeighbors(cell)
             colNeighbors = self.currentState.getColNeighbors(cell)
-            #print 'cell: ' + str(cell) + '\nrow: ' + str(rowNeighbors) + "\ncol: " + str(colNeighbors)
-            make row and col neighbor lists even to remove cases
+        
+            #make row and col neighbor lists even to remove cases
             rowNeighbors = useSymmetry(rowNeighbors)
             colNeighbors = useSymmetry(colNeighbors)
             print "current pos: " + str(cell)
@@ -72,9 +72,43 @@ class LaplaceSolver:
             #update current cell
             row, col = cell
             self.approximation[row][col] = updatedValue
+        return np.copy(self.approximation)
 
-#very basic, just to verify changes
-#remove later
+    def solve(self):
+        '''
+        solve laplaces equation over the grid
+        iterates until suitable maximum error
+        '''
+        errorThreshold = 0.001 
+        current = self.timeStep()
+        errorMatrix = np.zeros_like(self.approximation)
+        maxError = 1
+
+        while (abs(maxError) > errorThreshold):
+            previous = current
+            current = self.timeStep()
+            updateErrorMatrix(previous, current, errorMatrix)
+            maxError = np.amax(errorMatrix)
+               
+        
+def findMaxInMatrix(matrix):
+    rows, cols = matrix.shape
+    maximum = float(-inf)
+    for row in range(rows):
+        for col in range(cols):
+            maximum = max(maximum, matrix[row][col])
+    return maximum
+
+def updateErrorMatrix(previous, current, errorMatrix):
+    rows, cols = errorMatrix.shape
+    for row in range(rows):
+        for col in range(cols):
+            if (previous[row][col] == 0):
+                errorMatrix[row][col] = 0
+            else:
+                difference = current[row][col] - previous[row][col]
+                error = difference/previous[row][col]
+                errorMatrix[row][col] = error
 
 def useSymmetry(neighbors):
     '''
@@ -87,11 +121,13 @@ def useSymmetry(neighbors):
 
     return neighbors
 
+#very basic, just to verify changes
+#remove later
+
 def test():
     s = LaplaceSolver(environments.testGridB, (1, 1))
     s.currentState.display()
-    print s.findOrdering()
-    s.timeStep()
+    s.solve()
     print s.approximation
     return s
         

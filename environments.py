@@ -23,7 +23,7 @@ cellToChar = {
 def stringsToMatrix(stringArray): 
     rows = len(stringArray)
     cols = len(stringArray[0])
-    grid = np.zeros(shape=(rows, cols))
+    currentState = np.zeros(shape=(rows, cols))
 
     for row in range(rows):
         if len(stringArray[row]) != cols:
@@ -32,20 +32,21 @@ def stringsToMatrix(stringArray):
 
         for col in range(cols):
             char = stringArray[row][col]
-            grid[row][col] = charToCell[char]
+            currentState[row][col] = charToCell[char]
 
-    return grid
+    return currentState
 
 '''
 Environment class
-Has occupancy grid, dimensions, methods to update,
+Has occupancy currentState, dimensions, methods to update,
 methods to get neighboring cells (x and y direction)
 '''
 
 class Environment:
-    def __init__(self,stringArray):
-        self.grid = stringsToMatrix(stringArray)
-        self.rows, self.cols = self.grid.shape
+    def __init__(self,initStringArray, exploredStringArray):
+        self.currentState = stringsToMatrix(initStringArray)
+        self.goalState = stringsToMatrix(exploredStringArray)
+        self.rows, self.cols = self.currentState.shape
         self.dimensions = (self.rows, self.cols)
 
     def getDimensions(self):
@@ -53,7 +54,7 @@ class Environment:
 
     def display(self):
         displayString = ''
-        for row in self.grid:
+        for row in self.currentState:
             rowString = ''
             for cell in row:
                 rowString += cellToChar[cell]
@@ -63,11 +64,16 @@ class Environment:
 
     def isOccupied(self, position):
         row, col = position
-        return self.grid[row][col] == -1
+        return self.currentState[row][col] == -1
 
     def isUnexplored(self, position):
         row, col = position
-        return self.grid[row][col] == 0
+        return self.currentState[row][col] == 0
+
+    def reveal(self, coordinate):
+        row, col = coordinate
+        currentState[row][col] = goalState[row][col]
+        return goalState[row][col]
 
     '''
     WARNING!
@@ -124,22 +130,18 @@ class Environment:
         rows, cols = self.getDimensions()
         return coordinate[0] < 0 or coordinate[1] < 0 or coordinate[0] >= rows or coordinate[1] >= cols
 
-
 '''
-simple environment instances for testing
-XXX
-XO?
-XXX
-'''
+XXXX??
+XOOX??
+XOO???
+XXXX??
 
-testGridA = Environment(["XXX", "XO?", "XXX"])
-
-'''
-XXXX?
-XOOX?
-XOO??
-XXXX?
+XXXXXX
+XOOXOX
+XOOOOX
+XXXXXX
 '''
 
-testGridB = Environment(["XXXX?", "XOOX?", "XOO??", "XXXX?"])
+testGridB = Environment(["XXXX??", "XOOX??", "XOO???", "XXXX??"], 
+["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"])
 
