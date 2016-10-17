@@ -77,6 +77,7 @@ class LaplaceSolver:
     def solve(self):
         '''
         solve laplaces equation over the grid
+        uses gauss-siedel iteration
         iterates until suitable maximum error
         '''
         errorThreshold = 0.001 
@@ -90,6 +91,23 @@ class LaplaceSolver:
             updateErrorMatrix(previous, current, errorMatrix)
             maxError = np.amax(errorMatrix)
                
+    def choosePath(self):
+        '''
+        chooses direction where gradient is steepest
+        only moves to directly adjacent cells
+        '''
+        neighbors = self.currentState.getNeighbors(self.currentPos)
+        maxNeighbor = neighbors[0]
+        maxDifference = 0
+        currentRow, currentCol = self.currentPos
+        for neighbor in neighbors:
+            row, col = neighbor
+            difference = self.approximation[currentRow][currentCol] - self.approximation[row][col]
+            if maxDifference < difference:
+                maxNeighbor = neighbor
+                maxDifference = difference
+        return maxNeighbor 
+
         
 def findMaxInMatrix(matrix):
     rows, cols = matrix.shape
@@ -129,5 +147,6 @@ def test():
     s.currentState.display()
     s.solve()
     print s.approximation
+    print s.choosePath()
     return s
         
