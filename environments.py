@@ -81,7 +81,7 @@ class Environment:
         '''
         row, col = position
         rowNeighbors = [(row, col+1), (row, col-1)]
-        return self.filterNeighbors(rowNeighbors)
+        return self.filterFreeNeighbors(rowNeighbors)
 
     def getColNeighbors(self, position):
         '''
@@ -89,23 +89,36 @@ class Environment:
         '''
         row, col = position
         colNeighbors = [(row+1, col), (row-1, col)]
-        return self.filterNeighbors(colNeighbors)
+        return self.filterFreeNeighbors(colNeighbors)
 
     def getNeighbors(self, position):
         '''
         returns list of all valid neighbors
         (one manhattan distance away)
+        IMPORTANT: filters out unexplored neighbors
         '''
-        return self.getColNeighbors(position) + self.getRowNeighbors(position)
+        neighbors = self.getColNeighbors(position) + self.getRowNeighbors(position)
+        return self.filterExploredNeighbors(neighbors)
 
-    def filterNeighbors(self, neighborList):
+    def filterExploredNeighbors(self, neighbors):
         '''
-        removes invalid neighbors in list (removes unexplored and occupied space)
+        removes invalid neighbors in list
+        IMPORTANT: also removes unexplored neighbors
         '''
-        for neighbor in neighborList[:]:
+        for neighbor in neighbors[:]:
             if self.outOfBounds(neighbor) or self.isOccupied(neighbor) or self.isUnexplored(neighbor):
-                neighborList.remove(neighbor)
-        return neighborList
+                neighbors.remove(neighbor)
+        return neighbors
+
+    def filterFreeNeighbors(self, neighbors):
+        '''
+        removes invalid neighbors in list
+        keeps unexplored neighbors, removes occupied neighbors
+        '''
+        for neighbor in neighbors[:]:
+            if self.outOfBounds(neighbor) or self.isOccupied(neighbor):
+                neighbors.remove(neighbor)
+        return neighbors
 
     def outOfBounds(self, coordinate):
         rows, cols = self.getDimensions()
