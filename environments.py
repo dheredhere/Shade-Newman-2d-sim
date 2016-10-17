@@ -102,8 +102,6 @@ class Environment:
         return coordinate[0] < 0 or coordinate[1] < 0 or coordinate[0] >= rows or coordinate[1] >= cols
 
 
-
-
 '''
 simple environment instances for testing
 XXX
