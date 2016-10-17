@@ -27,7 +27,11 @@ class LaplaceSolver:
         fringe = deque()
         ordering = deque()
 
-        fringe.append((self.currentPos, 0)) #((row, col), depth)
+        #fringe.append((self.currentPos, 0)) #((row, col), depth)
+        visited.add(self.currentPos) #dont want to expand start (always 1)
+        #add the neighbors of the start vertex to the queue
+        for neighbor in self.currentState.getNeighbors(self.currentPos):
+            fringe.append((neighbor, 1))
 
         while len(fringe) > 0:
             position, depth = fringe.popleft()

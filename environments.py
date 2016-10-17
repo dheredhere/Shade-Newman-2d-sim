@@ -65,6 +65,16 @@ class Environment:
         row, col = position
         return self.grid[row][col] == -1
 
+    def isUnexplored(self, position):
+        row, col = position
+        return self.grid[row][col] == 0
+
+    '''
+    WARNING!
+    All the following getNeighbor functions DONT return unexplored space
+    they are filtered by filterNeighbors which ensures this
+    might have to add more in the future
+    '''
     def getRowNeighbors(self, position):
         '''
         returns list of free space neighbors in row
@@ -90,10 +100,10 @@ class Environment:
 
     def filterNeighbors(self, neighborList):
         '''
-        removes invalid neighbors in list
+        removes invalid neighbors in list (removes unexplored and occupied space)
         '''
         for neighbor in neighborList[:]:
-            if self.outOfBounds(neighbor) or self.isOccupied(neighbor):
+            if self.outOfBounds(neighbor) or self.isOccupied(neighbor) or self.isUnexplored(neighbor):
                 neighborList.remove(neighbor)
         return neighborList
 
