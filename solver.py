@@ -54,7 +54,7 @@ class LaplaceSolver:
             rowNeighbors = self.currentState.getRowNeighbors(cell)
             colNeighbors = self.currentState.getColNeighbors(cell)
             #print 'cell: ' + str(cell) + '\nrow: ' + str(rowNeighbors) + "\ncol: " + str(colNeighbors)
-            #make row and col neighbor lists even to remove cases
+            make row and col neighbor lists even to remove cases
             rowNeighbors = useSymmetry(rowNeighbors)
             colNeighbors = useSymmetry(colNeighbors)
             print "current pos: " + str(cell)
@@ -77,7 +77,9 @@ class LaplaceSolver:
 #remove later
 
 def useSymmetry(neighbors):
-    '''makes the list even so averaging neighbors is easier'''
+    '''
+    makes the list even so averaging neighbors is easier
+    '''
     if len(neighbors) == 1:
         neighbor = deepcopy(neighbors[0])
         neighbors.append(neighbor)

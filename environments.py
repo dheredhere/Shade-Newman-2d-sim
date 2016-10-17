@@ -135,11 +135,11 @@ XXX
 testGridA = Environment(["XXX", "XO?", "XXX"])
 
 '''
-XXXX
-XOO?
-XOO?
-XXXX
+XXXX?
+XOOX?
+XOO??
+XXXX?
 '''
 
-testGridB = Environment(["XXXX", "XOO?", "XOO?", "XXXX"])
+testGridB = Environment(["XXXX?", "XOOX?", "XOO??", "XXXX?"])
 
