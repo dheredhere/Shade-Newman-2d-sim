@@ -1,4 +1,7 @@
 import numpy as np
+from matplotlib import pyplot as plt
+import matplotlib as mpl
+
 
 '''
 utils to easily create and display 2d environments 
@@ -14,11 +17,16 @@ charToCell = {
         'X': -1,  
         '?': 0, }
 
-#temporary, only for debugging
+#only for debugging
 cellToChar = {
         -1: 'X',
         0: '?',
         1: 'O' }
+
+#use 10 as the location for the drone?
+cmap = mpl.colors.ListedColormap(['black', 'purple', 'white', 'green'])
+bounds = [-2, -.5, .5, 2, 12]
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 def stringsToMatrix(stringArray): 
     rows = len(stringArray)
@@ -43,11 +51,12 @@ methods to get neighboring cells (x and y direction)
 '''
 
 class Environment:
-    def __init__(self,initStringArray, exploredStringArray):
+    def __init__(self,initStringArray, exploredStringArray, startPos):
         self.currentState = stringsToMatrix(initStringArray)
         self.goalState = stringsToMatrix(exploredStringArray)
         self.rows, self.cols = self.currentState.shape
         self.dimensions = (self.rows, self.cols)
+        self.currentPos = startPos
 
     def getDimensions(self):
         return self.dimensions
@@ -59,7 +68,17 @@ class Environment:
             for cell in row:
                 rowString += cellToChar[cell]
             displayString += rowString + '\n'
-        print displayString
+        #print displayString
+
+        x, y = self.currentPos
+        value = self.currentState[x][y]
+        self.currentState[x][y] = 10
+
+        img = plt.imshow(self.currentState, interpolation='nearest', cmap = cmap, norm=norm)
+        plt.colorbar(img, cmap=cmap, norm=norm, boundaries = bounds, ticks=[-1,0,1])
+        plt.show()
+
+        self.currentState[x][y] = value
         return displayString
 
     def isOccupied(self, position):
@@ -69,6 +88,21 @@ class Environment:
     def isUnexplored(self, position):
         row, col = position
         return self.currentState[row][col] == 0
+
+    def move(self, newPos):
+        '''
+        need to update values in a radius
+        mxn is dimensions of the environment
+        '''
+        self.currentPos = newPos
+        a, b = newPos
+        m, n = self.rows, self.cols
+        r = 2
+        y, x = np.ogrid[-a:m-a, -b:n-b]
+        mask = x*x + y+y <= r*r
+        self.display()
+        self.currentState[mask] = self.goalState[mask]
+        self.display()
 
     def reveal(self, coordinate):
         row, col = coordinate
@@ -101,7 +135,7 @@ class Environment:
         '''
         returns list of all valid neighbors
         (one manhattan distance away)
-        IMPORTANT: filters out unexplored neighbors
+        IarrayMarrayPORTANT: filters out unexplored neighbors
         '''
         neighbors = self.getColNeighbors(position) + self.getRowNeighbors(position)
         return self.filterExploredNeighbors(neighbors)
@@ -143,5 +177,5 @@ XXXXXX
 '''
 
 testGridB = Environment(["XXXX??", "XOOX??", "XOO???", "XXXX??"], 
-["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"])
-
+["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1))
+plt.imshow(testGridB.currentState)

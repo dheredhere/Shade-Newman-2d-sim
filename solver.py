@@ -5,15 +5,15 @@ import numpy as np
 from copy import deepcopy
 
 class LaplaceSolver:
-    def __init__(self, startEnvironment, startPos):
+    def __init__(self, startEnvironment):
         self.currentState = startEnvironment
-        self.currentPos = startPos
+        self.currentPos = startEnvironment.currentPos
         self.ordering = deque()
 
         #init approximation matrix with same dims as grid
         #fill with 0's, 1 at start position
         self.approximation = np.zeros_like(startEnvironment.currentState)
-        row, col = startPos
+        row, col = self.currentPos
         self.approximation[row][col] = 1
     
     def findOrdering(self):
@@ -143,7 +143,7 @@ def useSymmetry(neighbors):
 #remove later
 
 def test():
-    s = LaplaceSolver(environments.testGridB, (1, 1))
+    s = LaplaceSolver(environments.testGridB)
     s.currentState.display()
     s.solve()
     print s.approximation
