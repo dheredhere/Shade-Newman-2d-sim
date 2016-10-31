@@ -25,7 +25,7 @@ cellToChar = {
 
 #use 10 as the location for the drone?
 cmap = mpl.colors.ListedColormap(['black', 'purple', 'white', 'green'])
-bounds = [-2, -.5, .5, 2, 12]
+bounds = [-2, -.0001, .0001, 2, 12]
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 def stringsToMatrix(stringArray): 
@@ -51,12 +51,21 @@ methods to get neighboring cells (x and y direction)
 '''
 
 class Environment:
-    def __init__(self,initStringArray, exploredStringArray, startPos):
-        self.currentState = stringsToMatrix(initStringArray)
+    def __init__(self, exploredStringArray, startPos, initStringArray=None):
         self.goalState = stringsToMatrix(exploredStringArray)
-        self.rows, self.cols = self.currentState.shape
-        self.dimensions = (self.rows, self.cols)
+        self.rows, self.cols = self.goalState.shape
         self.currentPos = startPos
+        
+        if (initStringArray == None):
+            #set self.current state = to a grid of unexplored cells
+            #call self.move() to find adjacent cells from start location
+            self.currentState = np.zeros_like(self.goalState)
+            self.move(startPos)
+            
+        else :
+            self.currentState = stringsToMatrix(initStringArray)
+
+        self.dimensions = (self.rows, self.cols)
 
     def getDimensions(self):
         return self.dimensions
@@ -105,6 +114,9 @@ class Environment:
         self.display()
 
     def reveal(self, coordinate):
+        '''
+        unused as of now
+        '''
         row, col = coordinate
         currentState[row][col] = goalState[row][col]
         return goalState[row][col]
@@ -176,6 +188,9 @@ XOOOOX
 XXXXXX
 '''
 
-testGridB = Environment(["XXXX??", "XOOX??", "XOO???", "XXXX??"], 
-["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1))
-plt.imshow(testGridB.currentState)
+testGridA = Environment(["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1), ["XXXX??", "XOOX??", "XOO???", "XXXX??"])
+
+testGridB = Environment(["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1))
+
+def test():
+    testGridB.display()
