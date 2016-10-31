@@ -100,12 +100,15 @@ class LaplaceSolver:
         maxNeighbor = neighbors[0]
         maxDifference = 0
         currentRow, currentCol = self.currentPos
+
         for neighbor in neighbors:
             row, col = neighbor
             difference = self.approximation[currentRow][currentCol] - self.approximation[row][col]
+
             if maxDifference < difference:
                 maxNeighbor = neighbor
                 maxDifference = difference
+                
         return maxNeighbor 
 
         

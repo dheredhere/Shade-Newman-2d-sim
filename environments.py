@@ -192,5 +192,3 @@ testGridA = Environment(["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1), ["XXXX
 
 testGridB = Environment(["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1))
 
-def test():
-    testGridB.display()
