@@ -129,22 +129,22 @@ class Environment:
         for row in range(0, self.rows):
             for col in range (0, self.cols):
                 if mask[row][col] == True:
-                    #TODO
                     sensorVal = self.detectCell((row, col))
-                    self.logodds += sensorVal #+1 when free, -1 when occupied 
-
-        #self.display()
-
-    
+                    if (sensorVal == 1): #cell is free
+                        #there is a p chance of it being occupied (p is error)
+                        self.logodds += logit(p)
+                    else if (sensorVal == -1): #cell is occupied
+                        #there is a 1-p chance of it being occupied 
+                        self.logodds += logit(1-p)
+        #self.display() 
 
     def detectCell(self, coordinate):
         '''
         returns cell with random chance of error
         '''
         row, col = coordinate
-        p = .05
         val = self.goalState[row][col]
-        if random.random() <= p: #return error with probability p
+        if random.random() <= self.errorProbability: #return error with probability p
             val = val * -1
         return val
 
