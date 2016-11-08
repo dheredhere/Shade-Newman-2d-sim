@@ -1,7 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib as mpl
-
+import random
+from math import log, exp
 
 '''
 utils to easily create and display 2d environments 
@@ -44,6 +45,15 @@ def stringsToMatrix(stringArray):
 
     return currentState
 
+#some utils for logodds stuff
+
+def logit(p):
+    return log(p/(1-p))
+
+def inverseLogit(a):
+    b = exp(a)
+    return b/(1+b)
+
 '''
 Environment class
 Has occupancy currentState, dimensions, methods to update,
@@ -53,6 +63,7 @@ methods to get neighboring cells (x and y direction)
 class Environment:
     def __init__(self, exploredStringArray, startPos, initStringArray=None):
         self.goalState = stringsToMatrix(exploredStringArray)
+        self.logodds = np.zeros_like(self.goalState)
         self.rows, self.cols = self.goalState.shape
         self.currentPos = startPos
         
@@ -66,6 +77,7 @@ class Environment:
             self.currentState = stringsToMatrix(initStringArray)
 
         self.dimensions = (self.rows, self.cols)
+        self.errorProbability = .1
 
     def getDimensions(self):
         return self.dimensions
@@ -92,7 +104,7 @@ class Environment:
 
     def isOccupied(self, position):
         row, col = position
-        return self.currentState[row][col] == -1
+        return self.currentState[row][col] < 0
 
     def isUnexplored(self, position):
         row, col = position
@@ -108,18 +120,33 @@ class Environment:
         m, n = self.rows, self.cols
         r = 2
         y, x = np.ogrid[-a:m-a, -b:n-b]
-        mask = x*x + y+y <= r*r
-        self.display()
-        self.currentState[mask] = self.goalState[mask]
-        self.display()
 
-    def reveal(self, coordinate):
+        mask = x*x + y+y <= r*r
+
+        self.currentState[mask] = self.goalState[mask]
+        updatedCells = np.zeros_like(self.currentState)
+
+        for row in range(0, self.rows):
+            for col in range (0, self.cols):
+                if mask[row][col] == True:
+                    #TODO
+                    sensorVal = self.detectCell((row, col))
+                    self.logodds += sensorVal #+1 when free, -1 when occupied 
+
+        #self.display()
+
+    
+
+    def detectCell(self, coordinate):
         '''
-        unused as of now
+        returns cell with random chance of error
         '''
         row, col = coordinate
-        currentState[row][col] = goalState[row][col]
-        return goalState[row][col]
+        p = .05
+        val = self.goalState[row][col]
+        if random.random() <= p: #return error with probability p
+            val = val * -1
+        return val
 
     '''
     WARNING!
