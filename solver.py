@@ -49,7 +49,7 @@ class LaplaceSolver:
         '''
         find an ordering and compute 1 step of the Gauss-Seidel method
         '''
-        self.findOrdering()
+        #self.findOrdering()
         for (cell, depth) in self.ordering:
             rowNeighbors = self.currentState.getRowNeighbors(cell)
             colNeighbors = self.currentState.getColNeighbors(cell)
@@ -148,6 +148,7 @@ def useSymmetry(neighbors):
 def test():
     s = LaplaceSolver(environments.testGridB)
     s.currentState.display()
+    s.findOrdering()
     s.solve()
     print s.approximation
     print s.choosePath()

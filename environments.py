@@ -66,18 +66,21 @@ class Environment:
         self.logodds = np.zeros_like(self.goalState)
         self.rows, self.cols = self.goalState.shape
         self.currentPos = startPos
+        self.errorProbability = .1
         
         if (initStringArray == None):
             #set self.current state = to a grid of unexplored cells
             #call self.move() to find adjacent cells from start location
             self.currentState = np.zeros_like(self.goalState)
-            self.move(startPos)
+
+            #take x sensor scans at initialization
+            for x in range(5):
+                self.move(startPos)
             
         else :
             self.currentState = stringsToMatrix(initStringArray)
 
         self.dimensions = (self.rows, self.cols)
-        self.errorProbability = .1
 
     def getDimensions(self):
         return self.dimensions
@@ -123,19 +126,32 @@ class Environment:
 
         mask = x*x + y+y <= r*r
 
-        self.currentState[mask] = self.goalState[mask]
-        updatedCells = np.zeros_like(self.currentState)
+        #self.currentState[mask] = self.goalState[mask]
+        #updatedCells = np.zeros_like(self.currentState)
 
         for row in range(0, self.rows):
             for col in range (0, self.cols):
                 if mask[row][col] == True:
+                    print (row, col)
+                    
                     sensorVal = self.detectCell((row, col))
+
                     if (sensorVal == 1): #cell is free
                         #there is a p chance of it being occupied (p is error)
-                        self.logodds += logit(p)
-                    else if (sensorVal == -1): #cell is occupied
+                        self.logodds[row][col] += logit(self.errorProbability)
+                    elif (sensorVal == -1): #cell is occupied
                         #there is a 1-p chance of it being occupied 
-                        self.logodds += logit(1-p)
+                        self.logodds[row][col] += logit(1-self.errorProbability)
+                        
+                    #now update any cells whose probabilities may have changed
+                    #TODO add thresholds in the future, ie if .4 <= p <= .6, undetermined
+                    #if p(occupied) > .5, then cell is occuped
+                    if self.logodds[row][col] > 0:
+                        self.currentState[row][col] = -1
+
+                    #if p(occupied) < .5, then cell is empty
+                    elif self.logodds[row][col] <= 0:
+                        self.currentState[row][col] = 1
         #self.display() 
 
     def detectCell(self, coordinate):
@@ -144,7 +160,8 @@ class Environment:
         '''
         row, col = coordinate
         val = self.goalState[row][col]
-        if random.random() <= self.errorProbability: #return error with probability p
+        if (random.random() <= self.errorProbability): #return error with probability p
+            print "sensor error!"
             val = val * -1
         return val
 

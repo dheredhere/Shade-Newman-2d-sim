@@ -1,5 +1,5 @@
 from environments import Environment
-from solver import laplaceSolver
+from solver import LaplaceSolver
 
 class Exploration:
     def __init__(self, environment, solver):
@@ -7,4 +7,7 @@ class Exploration:
         self.solver = solver
 
     def explore(self):
-        pass
+        while(1): #TODO: Impose some condition
+            solver.findOrdering()
+            solver.solve()
+            solver.choosePath()
