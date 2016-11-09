@@ -253,7 +253,24 @@ def genEnvStrings(rows, cols, numOfOccupiedCells):
         strings[i] = a
     return strings
 
-def selectRandomStart
+def selectRandomStart(stringArray):
+    '''
+    selects random startPosition for a string array environment
+    only chooses occupied positions
+    '''
+    rows = len(stringArray)
+    cols = len(stringArray[0])
+    while(True):
+        row = random.choice(range(1, rows-2))
+        col = random.choice(range(1, cols-1))
+        rowString = stringArray[row]
+        if rowString[col] == "O":
+            break
+    return (row, col)
+
+    
+
+
 '''
 XXXX??
 XOOX??
