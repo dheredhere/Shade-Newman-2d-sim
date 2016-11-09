@@ -3,6 +3,7 @@ from environments import Environment
 from collections import deque
 import numpy as np  
 from copy import deepcopy
+import pylab as plt
 
 class LaplaceSolver:
     def __init__(self, startEnvironment):
@@ -57,9 +58,11 @@ class LaplaceSolver:
             #make row and col neighbor lists even to remove cases
             rowNeighbors = useSymmetry(rowNeighbors)
             colNeighbors = useSymmetry(colNeighbors)
+            '''
             print "current pos: " + str(cell)
             print "row: " + str(rowNeighbors)
             print "col: " + str(colNeighbors)
+            '''
             neighbors = rowNeighbors + colNeighbors
 
             #then average neighbor values to find value for current cell
@@ -67,7 +70,10 @@ class LaplaceSolver:
             for neighbor in neighbors:
                 row, col = neighbor
                 neighborSum += self.approximation[row][col]
-            updatedValue = neighborSum/len(neighbors)
+            length = len(neighbors)
+            if (length == 0):
+                length = 1
+            updatedValue = neighborSum/length
             
             #update current cell
             row, col = cell
@@ -91,6 +97,10 @@ class LaplaceSolver:
             updateErrorMatrix(previous, current, errorMatrix)
             maxError = np.amax(errorMatrix)
                
+        #imshow solution
+        im = plt.imshow(self.approximation, cmap='hot')
+        plt.colorbar(im, orientation='vertical')
+        plt.show()
     def choosePath(self):
         '''
         chooses direction where gradient is steepest

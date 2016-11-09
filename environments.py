@@ -37,7 +37,7 @@ def stringsToMatrix(stringArray):
     for row in range(rows):
         if len(stringArray[row]) != cols:
             print("Error!\nThis row has an incorrect number of characters:\n")
-            print row
+            #print row
 
         for col in range(cols):
             char = stringArray[row][col]
@@ -66,7 +66,7 @@ class Environment:
         self.logodds = np.zeros_like(self.goalState)
         self.rows, self.cols = self.goalState.shape
         self.currentPos = startPos
-        self.errorProbability = .1
+        self.errorProbability = .0001 #TODO test different probabilities
         
         if (initStringArray == None):
             #set self.current state = to a grid of unexplored cells
@@ -74,8 +74,11 @@ class Environment:
             self.currentState = np.zeros_like(self.goalState)
 
             #take x sensor scans at initialization
+            '''
             for x in range(5):
                 self.move(startPos)
+            '''
+            self.move(startPos)
             
         else :
             self.currentState = stringsToMatrix(initStringArray)
@@ -132,7 +135,7 @@ class Environment:
         for row in range(0, self.rows):
             for col in range (0, self.cols):
                 if mask[row][col] == True:
-                    print (row, col)
+                    #print (row, col)
                     
                     sensorVal = self.detectCell((row, col))
 
@@ -161,7 +164,7 @@ class Environment:
         row, col = coordinate
         val = self.goalState[row][col]
         if (random.random() <= self.errorProbability): #return error with probability p
-            print "sensor error!"
+            #print "sensor error!"
             val = val * -1
         return val
 
@@ -220,6 +223,37 @@ class Environment:
         rows, cols = self.getDimensions()
         return coordinate[0] < 0 or coordinate[1] < 0 or coordinate[0] >= rows or coordinate[1] >= cols
 
+
+def genEnvStrings(rows, cols, numOfOccupiedCells):
+    '''
+    generates a string array that can be used to generate an environment
+    requires a boundary of occupied space
+    i.e.
+    XXX
+    XOX
+    XXX
+    '''
+    strings = [None] * rows
+    #first and last must be all occupied by boundary conditions
+    boundary = list("X" * cols)
+    strings[0], strings[rows-1] = boundary, boundary
+
+    #make the rest of the environment free space
+    for i in range(1, rows - 1):
+        strings[i] = list("X" + "O" * (cols - 2) + "X")
+    
+    #choose the random occupied spaces
+    for i in range(numOfOccupiedCells):
+        row = random.choice(range(1, rows - 2))
+        col = random.choice(range(1, cols - 2))
+        strings[row][col] = "X"
+
+    for i in range(rows):
+        a = ''.join(strings[i])
+        strings[i] = a
+    return strings
+
+def selectRandomStart
 '''
 XXXX??
 XOOX??
@@ -235,4 +269,12 @@ XXXXXX
 testGridA = Environment(["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1), ["XXXX??", "XOOX??", "XOO???", "XXXX??"])
 
 testGridB = Environment(["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1))
+
+def test():
+    t = testGridB
+    t.display()
+    t.move((1, 1))
+    t.display()
+    t.move((2, 1))
+    t.display()
 
