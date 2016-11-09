@@ -1,11 +1,11 @@
 import environments
-from environments import Environment
+from environments import Environment, genEnvStrings, selectRandomStart
 from solver import LaplaceSolver
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib as mpl
 
-class Exploration:
+class Explorer:
     def __init__(self, environment):
         self.environment = environment
 
@@ -34,5 +34,7 @@ class Exploration:
         self.environment.currentState[x][y] = value
 
 def test():
-    e = Exploration(Environment(["XXXXXX", "XOOXOX", "XOOOOX", "XXXXXX"], (1, 1)))
+    envStrings = genEnvStrings(10, 10, 10)
+    env = Environment(envStrings, selectRandomStart(envStrings))
+    e = Explorer(env)
     e.explore()
