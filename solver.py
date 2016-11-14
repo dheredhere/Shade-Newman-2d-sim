@@ -107,7 +107,7 @@ class LaplaceSolver:
         only moves to directly adjacent cells
         '''
         neighbors = self.currentState.getNeighbors(self.currentPos)
-        maxNeighbor = neighbors[0]
+        maxNeighbor = self.currentPos
         maxDifference = 0
         currentRow, currentCol = self.currentPos
 

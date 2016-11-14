@@ -38,7 +38,6 @@ def stringsToMatrix(stringArray):
         if len(stringArray[row]) != cols:
             print("Error!\nThis row has an incorrect number of characters:\n")
             #print row
-
         for col in range(cols):
             char = stringArray[row][col]
             currentState[row][col] = charToCell[char]
@@ -46,7 +45,6 @@ def stringsToMatrix(stringArray):
     return currentState
 
 #some utils for logodds stuff
-
 def logit(p):
     return log(p/(1-p))
 
@@ -66,7 +64,7 @@ class Environment:
         self.logodds = np.zeros_like(self.goalState)
         self.rows, self.cols = self.goalState.shape
         self.currentPos = startPos
-        self.errorProbability = .0001 #TODO test different probabilities
+        self.errorProbability = .2 #TODO test different probabilities
         
         if (initStringArray == None):
             #set self.current state = to a grid of unexplored cells
@@ -114,7 +112,16 @@ class Environment:
 
     def isUnexplored(self, position):
         row, col = position
+        if self.outOfBounds(position):
+            print "error: " + str(position)
         return self.currentState[row][col] == 0
+
+    def howManyUnexplored(self):
+        explored = np.count_nonzero(self.currentState)
+        x, y = self.currentState.shape
+        total = x * y
+        return total - explored
+
 
     def move(self, newPos):
         '''
@@ -131,7 +138,6 @@ class Environment:
 
         #self.currentState[mask] = self.goalState[mask]
         #updatedCells = np.zeros_like(self.currentState)
-
         for row in range(0, self.rows):
             for col in range (0, self.cols):
                 if mask[row][col] == True:
@@ -199,6 +205,17 @@ class Environment:
         neighbors = self.getColNeighbors(position) + self.getRowNeighbors(position)
         return self.filterExploredNeighbors(neighbors)
 
+    def getAllNeighbors(self, position):
+        row, col = position
+        colNeighbors = [(row+1, col), (row-1, col)]
+        rowNeighbors = [(row, col+1), (row, col-1)]
+        neighbors = colNeighbors + rowNeighbors
+        
+        for neighbor in neighbors[:]:
+            if self.outOfBounds(position):
+                neighbors.remove(neighbor)
+        return neighbors
+        
     def filterExploredNeighbors(self, neighbors):
         '''
         removes invalid neighbors in list
@@ -267,8 +284,6 @@ def selectRandomStart(stringArray):
         if rowString[col] == "O":
             break
     return (row, col)
-
-    
 
 
 '''
